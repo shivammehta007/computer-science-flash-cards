@@ -106,8 +106,4 @@ VALUES
     'Variational AutoEncoders (VAE) defines an intractable density function with latent z. Which we cannot optimize directly, hence we optimize the lower bound of that likelihood', 
    False
   );
-/* INSERT QUERY */
-INSERT INTO cards(id, type, front, back, known) 
-VALUES 
-  ('');
 
