@@ -30,6 +30,7 @@ def init_db():
 
 
 def add_data():
+    db = get_db()
     with app.open_resource('db/custom_questions.sql', mode='r') as f:
         db.execute(f.read())
 
