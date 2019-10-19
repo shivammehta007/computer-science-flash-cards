@@ -1,5 +1,5 @@
 import os
-import sqlite3
+import psycopg2
 from flask import Flask, request, session, g, redirect, url_for, abort, \
     render_template, flash
 
@@ -8,7 +8,7 @@ app.config.from_object(__name__)
 
 # Load default config and override config from an environment variable
 app.config.update(dict(
-    DATABASE=os.path.join(app.root_path, 'db', 'cards.db'),
+    DATABASE=os.environ['DATABASE_URL'],
     SECRET_KEY='development key',
     USERNAME='admin',
     PASSWORD='default'
@@ -17,10 +17,9 @@ app.config.from_envvar('CARDS_SETTINGS', silent=True)
 
 
 def connect_db():
-    rv = sqlite3.connect(app.config['DATABASE'])
-    rv.row_factory = sqlite3.Row
-    return rv
-
+    rv = psycopg2.connect(app.config['DATABASE'])
+    cursor = rv.cursor()
+    return cursor
 
 def init_db():
     db = get_db()
@@ -49,10 +48,10 @@ def close_db(error):
 
 # Uncomment and use this to initialize database, then comment it
 #   You can rerun it to pave the database and start over
-# @app.route('/initdb')
-# def initdb():
-#     init_db()
-#     return 'Initialized the database.'
+@app.route('/initdb')
+def initdb():
+    init_db()
+    return 'Initialized the database.'
 
 
 @app.route('/')
