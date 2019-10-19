@@ -48,10 +48,10 @@ def close_db(error):
 
 # Uncomment and use this to initialize database, then comment it
 #   You can rerun it to pave the database and start over
-@app.route('/initdb')
-def initdb():
-    init_db()
-    return 'Initialized the database.'
+# @app.route('/initdb')
+# def initdb():
+#     init_db()
+#     return 'Initialized the database.'
 
 
 @app.route('/')
@@ -67,11 +67,7 @@ def cards():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     db = get_db()
-    query = '''
-        SELECT id, type, front, back, known
-        FROM cards
-        ORDER BY id DESC
-    '''
+    query = 'SELECT id, type, front, back, known FROM cards ORDER BY id DESC;'
     cur = db.execute(query)
     cards = cur.fetchall()
     return render_template('cards.html', cards=cards, filter_name="all")
@@ -96,7 +92,7 @@ def filter_cards(filter_name):
         return redirect(url_for('cards'))
 
     db = get_db()
-    fullquery = "SELECT id, type, front, back, known FROM cards " + query + " ORDER BY id DESC"
+    fullquery = "SELECT id, type, front, back, known FROM cards " + query + " ORDER BY id DESC;"
     cur = db.execute(fullquery)
     cards = cur.fetchall()
     return render_template('cards.html', cards=cards, filter_name=filter_name)
@@ -107,7 +103,7 @@ def add_card():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     db = get_db()
-    db.execute('INSERT INTO cards (type, front, back) VALUES (?, ?, ?)',
+    db.execute('INSERT INTO cards (type, front, back) VALUES (?, ?, ?);',
                [request.form['type'],
                 request.form['front'],
                 request.form['back']
@@ -121,11 +117,7 @@ def edit(card_id):
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     db = get_db()
-    query = '''
-        SELECT id, type, front, back, known
-        FROM cards
-        WHERE id = ?
-    '''
+    query = ' SELECT id, type, front, back, known FROM cards WHERE id = ?;'
     cur = db.execute(query, [card_id])
     card = cur.fetchone()
     return render_template('edit.html', card=card)
@@ -163,7 +155,7 @@ def delete(card_id):
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     db = get_db()
-    db.execute('DELETE FROM cards WHERE id = ?', [card_id])
+    db.execute('DELETE FROM cards WHERE id = ?;', [card_id])
     flash('Card deleted.')
     return redirect(url_for('cards'))
 
@@ -209,16 +201,7 @@ def memorize(card_type, card_id):
 def get_card(type):
     db = get_db()
 
-    query = '''
-      SELECT
-        id, type, front, back, known
-      FROM cards
-      WHERE
-        type = ?
-        and known = False
-      ORDER BY RANDOM()
-      LIMIT 1
-    '''
+    query = ' SELECT id, type, front, back, known FROM cards WHERE type = ? and known = False ORDER BY RANDOM() LIMIT 1;'
 
     cur = db.execute(query, [type])
     return cur.fetchone()
@@ -227,14 +210,7 @@ def get_card(type):
 def get_card_by_id(card_id):
     db = get_db()
 
-    query = '''
-      SELECT
-        id, type, front, back, known
-      FROM cards
-      WHERE
-        id = ?
-      LIMIT 1
-    '''
+    query = 'SELECT id, type, front, back, known FROM cards WHERE id = ? LIMIT 1;'
 
     cur = db.execute(query, [card_id])
     return cur.fetchone()
@@ -245,7 +221,7 @@ def mark_known(card_id, card_type):
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     db = get_db()
-    db.execute('UPDATE cards SET known = True WHERE id = ?', [card_id])
+    db.execute('UPDATE cards SET known = True WHERE id = ?;', [card_id])
     flash('Card marked as known.')
     return redirect(url_for(card_type))
 
