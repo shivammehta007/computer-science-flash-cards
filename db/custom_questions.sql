@@ -39,14 +39,14 @@ VALUES
       and Yank (
         and cycle through the different Yank)', 
         'kill : C-k , yank: C-y , Cycle : M-y', 
-        0
+       False
       );
 /* INSERT QUERY */
 INSERT INTO cards(id, type, front, back, known) 
 VALUES 
   (
     10, 1, 'Show list of Buffer in Emacs', 
-    'C-x C-b', 0
+    'C-x C-b',False
   );
 /* INSERT QUERY */
 INSERT INTO cards(id, type, front, back, known) 
@@ -55,7 +55,7 @@ VALUES
     11, 1, 'Find File and Save File', 
     'Find: C-x C-f 
 Save: C-x C-s', 
-    0
+   False
   );
 /* INSERT QUERY */
 INSERT INTO cards(id, type, front, back, known) 
@@ -64,7 +64,7 @@ VALUES
     12, 1, 'Commands to List all Buffers and Switch to a Buffer', 
     'List: C-x C-b
 Switch: C-x b', 
-    0
+   False
   );
 /* INSERT QUERY */
 INSERT INTO cards(id, type, front, back, known) 
@@ -88,7 +88,7 @@ VALUES
   ) Scroll : C - M - v Switch : C - x o ',False);
 /* INSERT QUERY */INSERT INTO cards(id,type,front,back,known) VALUES( 18,1,' What is the min max objective function for GANs', 
   'https://miro.medium.com/max/1292/1*XiAXk60ur-NeZm2c49s7nA.png', 
-  0
+ False
 );
 /* INSERT QUERY */
 INSERT INTO cards(id, type, front, back, known) 
@@ -96,7 +96,7 @@ VALUES
   (
     19, 1, 'How Does PixelRNN and PixelCNN, models the generator?', 
     'PixelCNN and RNN generates a probabilistic density tractable function and we optimize the likelihood of the generated data', 
-    0
+   False
   );
 /* INSERT QUERY */
 INSERT INTO cards(id, type, front, back, known) 
@@ -104,7 +104,7 @@ VALUES
   (
     20, 1, 'How does the Variation AutoEncoder (VAE) , models the Generator?', 
     'Variational AutoEncoders (VAE) defines an intractable density function with latent z. Which we cannot optimize directly, hence we optimize the lower bound of that likelihood', 
-    0
+   False
   );
 /* INSERT QUERY */
 INSERT INTO cards(id, type, front, back, known) 
