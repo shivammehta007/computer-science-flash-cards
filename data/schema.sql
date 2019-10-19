@@ -1,6 +1,6 @@
 drop table if exists cards;
 create table cards (
-  id integer primary key autoincrement,
+  id integer primary key,
   type tinyint not null, /* 1 for vocab, 2 for code */
   front text not null,
   back text not null,
