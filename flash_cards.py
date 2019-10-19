@@ -29,6 +29,11 @@ def init_db():
         db.execute(f.read())
 
 
+def add_data():
+    with app.open_resource('db/custom_questions.sql', mode='r') as f:
+        db.execute(f.read())
+
+
 def get_db():
     """Opens a new database connection if there is none yet for the
     current application context.
@@ -53,6 +58,11 @@ def close_db(error):
 # def initdb():
 #     init_db()
 #     return 'Initialized the database.'
+
+@app.route('/insert')
+def initdb():
+    add_data()
+    return 'Populated the database.'
 
 
 @app.route('/')
