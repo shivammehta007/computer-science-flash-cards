@@ -4,5 +4,5 @@ create table cards (
   type INTEGER not null, /* 1 for vocab, 2 for code */
   front text not null,
   back text not null,
-  known boolean default 0
+  known boolean default False
 );

@@ -86,8 +86,8 @@ def filter_cards(filter_name):
         "all":      "where 1 = 1",
         "general":  "where type = 1",
         "code":     "where type = 2",
-        "known":    "where known = 1",
-        "unknown":  "where known = 0",
+        "known":    "where known = True",
+        "unknown":  "where known = False",
     }
 
     query = filters.get(filter_name)
@@ -218,7 +218,7 @@ def get_card(type):
       FROM cards
       WHERE
         type = ?
-        and known = 0
+        and known = False
       ORDER BY RANDOM()
       LIMIT 1
     '''
@@ -248,7 +248,7 @@ def mark_known(card_id, card_type):
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     db = get_db()
-    db.execute('UPDATE cards SET known = 1 WHERE id = ?', [card_id])
+    db.execute('UPDATE cards SET known = True WHERE id = ?', [card_id])
     db.commit()
     flash('Card marked as known.')
     return redirect(url_for(card_type))
