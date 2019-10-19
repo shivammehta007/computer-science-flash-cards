@@ -45,12 +45,14 @@
     <br />
 
     <table class="table table-bordered">
+        <th>Edit</th>
+        <th>Front and Back</th>
         {% for card in cards %}
             <tr>
-                <td>
+                <td class="col-md-1">
                     <a href="{{ url_for('edit', card_id=card.id) }}" class="btn btn-xs btn-primary"><i class="fa fa-pencil" aria-hidden="true"></i></a>
                 </td>
-                <td class="cardContent">
+                <td class="cardContent col-md-11">
                     <h4>
                         {{ card.front }}
                     </h4>

@@ -1,5 +1,6 @@
 import os
 import psycopg2
+import psycopg2.extras
 from flask import Flask, request, session, g, redirect, url_for, abort, \
     render_template, flash
 
@@ -8,7 +9,7 @@ app.config.from_object(__name__)
 
 # Load default config and override config from an environment variable
 app.config.update(dict(
-    DATABASE=os.environ['DATABASE_URL'],
+    DATABASE= os.environ['DATABASE_URL'],
     SECRET_KEY='development key',
     USERNAME='admin',
     PASSWORD='default'
@@ -19,7 +20,7 @@ app.config.from_envvar('CARDS_SETTINGS', silent=True)
 def connect_db():
     conn = psycopg2.connect(app.config['DATABASE'])
     conn.autocommit = True
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     return cursor
 
 def init_db():
@@ -48,10 +49,10 @@ def close_db(error):
 
 # Uncomment and use this to initialize database, then comment it
 #   You can rerun it to pave the database and start over
-# @app.route('/initdb')
-# def initdb():
-#     init_db()
-#     return 'Initialized the database.'
+@app.route('/initdb')
+def initdb():
+    init_db()
+    return 'Initialized the database.'
 
 
 @app.route('/')
@@ -69,7 +70,7 @@ def cards():
     db = get_db()
     query = 'SELECT id, type, front, back, known FROM cards ORDER BY id DESC;'
     cur = db.execute(query)
-    cards = cur.fetchall()
+    cards = db.fetchall()
     return render_template('cards.html', cards=cards, filter_name="all")
 
 
@@ -94,7 +95,7 @@ def filter_cards(filter_name):
     db = get_db()
     fullquery = "SELECT id, type, front, back, known FROM cards " + query + " ORDER BY id DESC;"
     cur = db.execute(fullquery)
-    cards = cur.fetchall()
+    cards = db.fetchall()
     return render_template('cards.html', cards=cards, filter_name=filter_name)
 
 
@@ -103,7 +104,7 @@ def add_card():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     db = get_db()
-    db.execute('INSERT INTO cards (type, front, back) VALUES (?, ?, ?);',
+    db.execute('INSERT INTO cards (type, front, back) VALUES (%s, %s, %s);',
                [request.form['type'],
                 request.form['front'],
                 request.form['back']
@@ -117,9 +118,9 @@ def edit(card_id):
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     db = get_db()
-    query = ' SELECT id, type, front, back, known FROM cards WHERE id = ?;'
+    query = ' SELECT id, type, front, back, known FROM cards WHERE id = %s;'
     cur = db.execute(query, [card_id])
-    card = cur.fetchone()
+    card = db.fetchone()
     return render_template('edit.html', card=card)
 
 
@@ -133,11 +134,11 @@ def edit_card():
     command = '''
         UPDATE cards
         SET
-          type = ?,
-          front = ?,
-          back = ?,
-          known = ?
-        WHERE id = ?
+          type = %s,
+          front = %s,
+          back = %s,
+          known = %s
+        WHERE id = %s
     '''
     db.execute(command,
                [request.form['type'],
@@ -155,7 +156,7 @@ def delete(card_id):
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     db = get_db()
-    db.execute('DELETE FROM cards WHERE id = ?;', [card_id])
+    db.execute('DELETE FROM cards WHERE id = %s;', [card_id])
     flash('Card deleted.')
     return redirect(url_for('cards'))
 
@@ -191,6 +192,7 @@ def memorize(card_type, card_id):
     if not card:
         flash("You've learned all the " + card_type + " cards.")
         return redirect(url_for('cards'))
+    print(card)
     short_answer = (len(card['back']) < 75)
     return render_template('memorize.html',
                            card=card,
@@ -200,20 +202,20 @@ def memorize(card_type, card_id):
 
 def get_card(type):
     db = get_db()
-
-    query = ' SELECT id, type, front, back, known FROM cards WHERE type = ? and known = False ORDER BY RANDOM() LIMIT 1;'
-
+    
+    query = ' SELECT id, type, front, back, known FROM cards WHERE type = %s and known = False ORDER BY RANDOM() LIMIT 1;'
+    print(type)
     cur = db.execute(query, [type])
-    return cur.fetchone()
+    return db.fetchone()
 
 
 def get_card_by_id(card_id):
     db = get_db()
 
-    query = 'SELECT id, type, front, back, known FROM cards WHERE id = ? LIMIT 1;'
+    query = 'SELECT id, type, front, back, known FROM cards WHERE id = %s LIMIT 1;'
 
     cur = db.execute(query, [card_id])
-    return cur.fetchone()
+    return db.fetchone()
 
 
 @app.route('/mark_known/<card_id>/<card_type>')
@@ -221,7 +223,7 @@ def mark_known(card_id, card_type):
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     db = get_db()
-    db.execute('UPDATE cards SET known = True WHERE id = ?;', [card_id])
+    db.execute('UPDATE cards SET known = True WHERE id = %s;', [card_id])
     flash('Card marked as known.')
     return redirect(url_for(card_type))
 
