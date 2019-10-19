@@ -17,15 +17,15 @@ app.config.from_envvar('CARDS_SETTINGS', silent=True)
 
 
 def connect_db():
-    rv = psycopg2.connect(app.config['DATABASE'])
-    cursor = rv.cursor()
+    conn = psycopg2.connect(app.config['DATABASE'])
+    conn.autocommit = True
+    cursor = conn.cursor()
     return cursor
 
 def init_db():
     db = get_db()
     with app.open_resource('data/schema.sql', mode='r') as f:
         db.execute(f.read())
-    db.commit()
 
 
 def get_db():
@@ -112,7 +112,6 @@ def add_card():
                 request.form['front'],
                 request.form['back']
                 ])
-    db.commit()
     flash('New card was successfully added.')
     return redirect(url_for('cards'))
 
@@ -155,7 +154,6 @@ def edit_card():
                 known,
                 request.form['card_id']
                 ])
-    db.commit()
     flash('Card saved.')
     return redirect(url_for('cards'))
 
@@ -166,7 +164,6 @@ def delete(card_id):
         return redirect(url_for('login'))
     db = get_db()
     db.execute('DELETE FROM cards WHERE id = ?', [card_id])
-    db.commit()
     flash('Card deleted.')
     return redirect(url_for('cards'))
 
@@ -249,7 +246,6 @@ def mark_known(card_id, card_type):
         return redirect(url_for('login'))
     db = get_db()
     db.execute('UPDATE cards SET known = True WHERE id = ?', [card_id])
-    db.commit()
     flash('Card marked as known.')
     return redirect(url_for(card_type))
 
