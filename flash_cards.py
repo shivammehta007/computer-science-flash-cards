@@ -203,7 +203,6 @@ def memorize(card_type, card_id):
     if not card:
         flash("You've learned all the " + card_type + " cards.")
         return redirect(url_for('cards'))
-    print(card)
     short_answer = (len(card['back']) < 75)
     return render_template('memorize.html',
                            card=card,
@@ -215,7 +214,6 @@ def get_card(type):
     db = get_db()
     
     query = ' SELECT id, type, front, back, known FROM cards WHERE type = %s and known = False ORDER BY RANDOM() LIMIT 1;'
-    print(type)
     cur = db.execute(query, [type])
     return db.fetchone()
 
