@@ -24,7 +24,7 @@ def connect_db():
 def init_db():
     db = get_db()
     with app.open_resource('data/schema.sql', mode='r') as f:
-        db.cursor().executescript(f.read())
+        db.execute(f.read())
     db.commit()
 
 
